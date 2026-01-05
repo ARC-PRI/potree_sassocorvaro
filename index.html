@@ -49,41 +49,14 @@
 
     viewer.setEDLEnabled(true);
     viewer.setFOV(60);
-    viewer.setPointBudget(10_000_000);
+    viewer.setPointBudget(40_000_000);
     viewer.loadSettingsFromURL();
     viewer.setDescription("ROCCA UBALDINESCA");
 
     viewer.loadGUI(() => {
-  viewer.setLanguage("en");
-  $("#menu_appearance").next().show();
-
-  // =====================
-  // LIMITA POINT BUDGET SLIDER A 10 MILIONI
-  // =====================
-  const clampPointBudgetSlider = (maxPoints = 10_000_000) => {
-    const tryClamp = () => {
-      const slider = $("#pointBudgetSlider");
-
-      if (slider.length === 0) {
-        // GUI non ancora pronta
-        setTimeout(tryClamp, 200);
-        return;
-      }
-
-      slider.slider("option", "max", maxPoints);
-      slider.slider("option", "step", 250_000);
-
-      // riallinea valore corrente
-      slider.slider("value", Math.min(viewer.getPointBudget(), maxPoints));
-
-      console.log("PointBudget slider max set to", maxPoints);
-    };
-
-    tryClamp();
-  };
-
-  clampPointBudgetSlider(10_000_000);
-});
+      viewer.setLanguage("en");
+      $("#menu_appearance").next().show();
+    });
 
     // =====================
     // POINT SIZE UI
