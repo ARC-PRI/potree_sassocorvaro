@@ -159,27 +159,50 @@
       });
     }
 
-    // =====================
-    // LOAD POINT CLOUD
-    // =====================
-    Potree.loadPointCloud(
-      "https://github.com/ARC-PRI/potree_sassocorvaro/commits/pc_sassocorvaro/metadata.json",
-      "sassocorvaro",
-      e => {
-        const pc = e.pointcloud;
-        const mat = pc.material;
+// =====================
+// LOAD POINT CLOUD (TILED - GitHub Pages friendly)
+// =====================
+const NUM_TILES = 110;                 // aggiorna se cambia
+const pcsA = [];                       // conterrà i pointcloud caricati (gruppo A)
+let appearanceSliderBound = false;     // per aggiungere lo slider una sola volta
 
-        mat.activeAttributeName = "rgba";
-        mat.size = 2.0;
-        mat.minSize = 2;
-        mat.pointSizeType = Potree.PointSizeType.FIXED;
+function applyMaterialDefaults(pc){
+  const mat = pc.material;
+  mat.activeAttributeName = "rgba";
 
-        viewer.scene.addPointCloud(pc);
-        viewer.fitToScreen();
+  // valori coerenti col tuo slider e con performance
+  mat.size = 2.0;
+  mat.minSize = 2;
+  mat.pointSizeType = Potree.PointSizeType.FIXED;
 
-        addPointSizeSliderToAppearance(mat);
-      }
-    );
+  return mat;
+}
+
+function loadTile(i){
+  const name = `tile_${i}`;
+  const path = `./pointclouds/sassocorvaro/${name}/metadata.json`;
+
+  Potree.loadPointCloud(path, name, e => {
+    const pc = e.pointcloud;
+    const mat = applyMaterialDefaults(pc);
+
+    viewer.scene.addPointCloud(pc);
+    pcsA.push(pc);
+
+    // aggancia lo slider all'apparenza solo una volta (sul primo tile caricato)
+    if (!appearanceSliderBound){
+      appearanceSliderBound = true;
+      addPointSizeSliderToAppearance(mat);
+      viewer.fitToScreen();
+    }
+  });
+}
+
+// carica tutte le tile
+for (let i = 1; i <= NUM_TILES; i++){
+  loadTile(i);
+}
+    
   </script>
 
 </body>
